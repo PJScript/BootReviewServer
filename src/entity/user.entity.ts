@@ -1,28 +1,40 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { platform } from 'os';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Review } from './review.entity'
 
 @Entity('USER')
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id :string;
 
   @Column({type:'text'})
   account: string;
+  @Column({type:'text'})
   gender: string;
+  @Column({type:'text'})
   name: string;
+  @Column({type:'text'})
   sns: string; // null or kakao or google or facebook
+  @Column({type:'text'})
   pw: string;
+  @Column({type:'text'})
   ip: string;
+  @Column({type:'text'})
   ipLst: string;
+
   
   @Column({type:'text'})
   del_yn: string; // y = delete  n = not delete
 
-  @CreateDateColumn({type:Date})
+  @CreateDateColumn()
   createDate: Date;
 
-  @UpdateDateColumn({type:Date})
+  @UpdateDateColumn()
   updateOn: Date;
 
-  @DeleteDateColumn({type:Date})
-  deletionDate: Date;
+  @DeleteDateColumn()
+  deleteDate: Date;
+
+  @OneToMany(type => Review, review => review.userId)
+  review: Review
 }
