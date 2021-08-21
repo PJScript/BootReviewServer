@@ -7,6 +7,7 @@ import { ChartData } from './entity/chartData.entity'
 import { Review } from './entity/review.entity'
 import { PlatForm } from './entity/platForm.entity';
 import { PlatReview } from './entity/plat_review.entity';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PlatReview } from './entity/plat_review.entity';
     ReviewModule,
     AuthModule
   ],
+  
   controllers: [],
   providers: [],
 })
