@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req, Headers, Query } from '@nestjs/common';
+import { Controller, Get, Param, Req, Headers, Query, Delete } from '@nestjs/common';
 import { ReviewService } from './review.service';
 
 @Controller('comment')
@@ -7,11 +7,16 @@ export class ReviewController {
   
 
   @Get('platform')
-  getAll(@Query('c') id: string){
-    
-    // 데이터베이스 테이블 생성, 효율적인 조회 생각해보기 1. 테이블을 플랫폼 갯수만큼 만들기 2. 한군데 다 몰아넣고 가져오기 ( 비효율적 )
-    return this.reviewService.getAllReview(id)
+  getReview(@Query() query: number){   
+    return this.reviewService.getReview(query)  // go  review.service.ts
   }
-  
+  @Get()
+  getAllUser(@Req() req: string){
+    return this.reviewService.getAllUser();     // go  review.service.ts
+  }
 
+  @Delete('platform')
+  removeReview(@Req() req: string){
+    return this.reviewService.removeReview(req);
+  }
 }

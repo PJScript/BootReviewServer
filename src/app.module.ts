@@ -14,6 +14,7 @@ import { PlatReview } from './entity/plat_review.entity';
       type:'mysql',
       host: 'bootreview.cq7ergkxjze4.ap-northeast-2.rds.amazonaws.com',
       port: 3306,
+      timezone: "Asia/Seoul",
       username: 'admin',
       password: 'admin1346',
       database: 'BootReview',

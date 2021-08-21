@@ -1,20 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Index, ManyToOne } from "typeorm"
+import { PlatForm } from "./platForm.entity";
+import { User } from "./user.entity";
 
 
 @Entity('REVIEW')
 export class Review {
-  @PrimaryGeneratedColumn()
+
+  @PrimaryGeneratedColumn('increment')
   id: number;
   
+  //CREATE INDEX platform_code ON REVIEW (platFormCode);
 
-  @Column({type:'text'})
-  platFormCode: string;
-
-  @Column({type:'text'})
-  authorAccount: string;
-
-  @Column({type:'text'})
-  author: string;
   
   @Column({type:'text'})
   content: string;
@@ -33,12 +29,24 @@ export class Review {
   @Column({type:'text'})
   del_yn: string// y = delete, n = not delete
 
-  @CreateDateColumn({type:Date})
+  @CreateDateColumn({type:'timestamp'})
   createDate: Date;
 
-  @UpdateDateColumn({type:Date})
+  @UpdateDateColumn({type:'timestamp'})
   updateOn: Date;
   
-  @DeleteDateColumn({type:Date})
-  deleteDate: Date;
+  @Column()
+  deleteDate: string;
+  
+  @Column()
+  platformId:number;  // User 테이블과 관계
+
+  @Column()
+  userId:number;  // User 테이블과 관계
+
+  @ManyToOne(type => PlatForm, platform => platform.code)
+  platform: PlatForm
+
+  @ManyToOne(type => User, user => user.account)
+  user:User
 }
