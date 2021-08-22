@@ -1,14 +1,10 @@
-import { RemoteInfo } from 'dgram';
-import { Column, Entity, Index, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, Index, JoinColumn, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, Unique } from 'typeorm'
 import { Review } from './review.entity'
 
 @Entity('PLATFORM')
 export class PlatForm {
 
-  @PrimaryGeneratedColumn('increment')
-  id: number;
-  
-  @Column()
+  @Column({primary:true,unique:true})
   code:string;
 
   @Column({type:'text'})
@@ -19,7 +15,7 @@ export class PlatForm {
   @Column({type:'text'})
   del_yn: string;
 
-  @OneToMany(type => Review, review => review.platformId)
+  @OneToMany(type => Review, review => review.platformCode)
   reviews: Review
   
 }

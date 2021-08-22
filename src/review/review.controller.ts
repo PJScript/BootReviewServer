@@ -7,7 +7,7 @@ export class ReviewController {
   
 
   @Get('platform')
-  getReview(@Query() query: number){   
+  getReview(@Query() query: string){   
     return this.reviewService.getReview(query)  // go  review.service.ts
   }
   @Get()

@@ -9,16 +9,20 @@ import { PlatForm } from 'src/entity/platForm.entity';
 import { User } from 'src/entity/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
+import { ConfigService } from '@nestjs/config';
+import { Token } from 'src/entity/token.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Review,PlatForm,User]),
+  imports:[TypeOrmModule.forFeature([Review,PlatForm,User,Token]),
   PassportModule,
   JwtModule.register({
-    secret: 'hello',
+    secret: 'example',
     signOptions:{
       expiresIn:'60s'
     }
-  })],
+  }),
+  ConfigService
+  ],
   controllers:[AuthController],
   providers:[AuthService, LocalStrategy, JwtStrategy]
 })

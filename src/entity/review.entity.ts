@@ -38,11 +38,12 @@ export class Review {
   @Column()
   deleteDate: string;
   
-  @Column()
-  platformId:string;  // User 테이블과 관계
 
   @Column()
   userId:string;  // User 테이블과 관계
+
+  @Column()
+  platformCode:string
 
   @ManyToOne(type => PlatForm, platform => platform.code)
   platform: PlatForm

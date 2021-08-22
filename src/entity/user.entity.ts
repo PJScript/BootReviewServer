@@ -38,6 +38,6 @@ export class User {
   @OneToMany(type => Review, review => review.userId)
   review: Review
 
-  @ManyToOne(type => Token, token => token.user_id)
+  @OneToMany(type => Token, token => token.userId)
   token:Token[]
 }
