@@ -20,4 +20,6 @@ export class AuthController {
   getProfile(@Req() req){
     return this.authService.profile(req.headers.authorization);
   }
+
+
 }

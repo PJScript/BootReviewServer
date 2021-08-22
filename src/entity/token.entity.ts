@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
 @Entity('TOKEN')
@@ -7,18 +7,18 @@ export class Token {
   @PrimaryGeneratedColumn('increment')
   id:number;
 
-  @Column()
-  user_id:number;
+  @Column({type:'int'})
+  userId:number;
 
   @Column({type:'text'})
   token_value:string;
 
   @Column({type:'text'})
-  expire:string;
+  expired:string;
 
-  @Column({type:'text'})
-  due_date:Date;
+  @Column()
+  due_date:string;
 
-  @OneToMany(type => User, user => user.account)
+  @ManyToOne(type => User, user => user.account)
   user:User
 }

@@ -25,7 +25,7 @@ export class ReviewService {
 
   async getReview(query){// , ,   
     let page: number = Number(query.page)   //type 검사를 안함 **주의**
-    let code: number = Number(query.code)   //type 검사를 안함 **주의**
+    let code: string = query.code   //type 검사를 안함 **주의**
     
     if(page != 1){  // 중복 컨텐츠 해결
       page = page + 1
