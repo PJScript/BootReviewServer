@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Index, ManyToOne } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Index, ManyToOne, JoinTable } from "typeorm"
 import { PlatForm } from "./platForm.entity";
 import { User } from "./user.entity";
 
@@ -10,7 +10,7 @@ export class Review {
   id: number;
   
   //CREATE INDEX platform_code ON REVIEW (platFormCode);
-
+  
   
   @Column({type:'text'})
   content: string;
@@ -39,10 +39,10 @@ export class Review {
   deleteDate: string;
   
   @Column()
-  platformId:number;  // User 테이블과 관계
+  platformId:string;  // User 테이블과 관계
 
   @Column()
-  userId:number;  // User 테이블과 관계
+  userId:string;  // User 테이블과 관계
 
   @ManyToOne(type => PlatForm, platform => platform.code)
   platform: PlatForm

@@ -1,6 +1,6 @@
-import { platform } from 'os';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Review } from './review.entity'
+import { Token } from './token.entity';
 
 @Entity('USER')
 export class User {
@@ -37,4 +37,7 @@ export class User {
 
   @OneToMany(type => Review, review => review.userId)
   review: Review
+
+  @ManyToOne(type => Token, token => token.user_id)
+  token:Token[]
 }

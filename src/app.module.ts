@@ -8,6 +8,7 @@ import { Review } from './entity/review.entity'
 import { PlatForm } from './entity/platForm.entity';
 import { PlatReview } from './entity/plat_review.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { Token } from './entity/token.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { JwtModule } from '@nestjs/jwt';
       username: 'admin',
       password: 'admin1346',
       database: 'BootReview',
-      entities:[User, ChartData, Review, PlatForm, PlatReview],
+      entities:[User, ChartData, Review, PlatForm, PlatReview, Token],
       synchronize: true,
     }),
     ReviewModule,
