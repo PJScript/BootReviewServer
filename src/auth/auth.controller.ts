@@ -14,7 +14,7 @@ export class AuthController {
     console.log('작동')
     return this.authService.login(req.body);
   }
-
+  
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Req() req){

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -29,6 +29,29 @@ export class AuthService {
   return null;
   }   // first logic and go login function after done 
 
+  async validateToken(token:any,option?:number):Promise<any>{  // 선택 매개변수 option  0 or other
+    if(!option){  // option 0 is get req.body
+      try {
+        return await this.jwtService.verify(token.split(' ')[1],{secret:this.configService.get('TOKEN_SECRET')})
+      }catch(error){
+        throw new HttpException({
+          status: HttpStatus.UNAUTHORIZED,
+          error: error,
+        }, HttpStatus.UNAUTHORIZED);
+      }
+    }else{  // option blank or other number is get DB userInfo
+      try{
+        let verify = this.jwtService.verify(token.split(' ')[1],{secret:this.configService.get('TOKEN_SECRET')})
+        return this.userRepository.query(`SELECT id,account,gender,name,createDate,updateOn FROM USER WHERE account = '${verify.account}' AND del_yn = 'n'`)
+      }catch(error){
+        throw new HttpException({
+          status: HttpStatus.UNAUTHORIZED,
+          error: error,
+        }, HttpStatus.UNAUTHORIZED);
+      }
+    }
+  }
+
   async login(user: any){
     const payload = {
       account:user.account,
@@ -39,13 +62,7 @@ export class AuthService {
     // db에 유저정보 검색
     let userInfo = await this.userRepository.findOne({account:user.account}) //유저정보를 찾음
     let refresh_token = this.jwtService.sign(payload,{secret:this.configService.get('TOKEN_SECRET'),expiresIn:'24h'})
-    
-  
-    
     // console.log(userInfo)
-
-    
-
     return {
       access_token: this.jwtService.sign(payload,{secret:this.configService.get('TOKEN_SECRET'),expiresIn:'60s'}), // 해당 토큰이 만료되면 재 로그인 필요.
       refresh_token: refresh_token,
@@ -54,8 +71,8 @@ export class AuthService {
   }
   
   async profile(token:any):Promise<any>{
-    let verify = await this.jwtService.verify(token.split(' ')[1], {secret:process.env.TOKEN_SECRET})  
-      return this.userRepository.query(`SELECT account,name,gender FROM USER WHERE account = '${verify.account}'`)
+    let getUserInfo = await this.validateToken(token,1)
+      return getUserInfo
   }
 }
 

@@ -10,7 +10,8 @@ export class Review {
   id: number;
   
   //CREATE INDEX platform_code ON REVIEW (platFormCode);
-  
+  @Column({type:'text'})
+  title:string;
   
   @Column({type:'text'})
   content: string;
@@ -40,7 +41,7 @@ export class Review {
   
 
   @Column()
-  userId:string;  // User 테이블과 관계
+  userId:number;  // User 테이블과 관계
 
   @Column()
   platformCode:string
