@@ -5,20 +5,17 @@ import { User } from "./user.entity";
 export class Token {
 
   @PrimaryGeneratedColumn('increment')
-  id:number;
+  id:number
 
-  @Column({type:'int'})
-  userId:number;
+  @Column({type:'text'})
+  key:string
 
   @Column({type:'text'})
   token_value:string;
 
   @Column({type:'text'})
   expired:string;
-
+  
   @Column()
-  due_date:string;
-
-  @ManyToOne(type => User, user => user.account)
-  user:User
+  due_date:Date
 }
