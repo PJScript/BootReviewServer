@@ -48,7 +48,6 @@ export class ReviewService {
 
   async getAllUser(){
     let test = await this.userRepository.find()
-    console.log(test,"여기")
     return test
   }
 
@@ -72,16 +71,12 @@ export class ReviewService {
       let date = new Date()
       date.toISOString()  // 삭제시간 한국기준
       let userInfo = await this.authService.validateToken(req.headers.authorization)
-      console.log(userInfo,'유저정보')
       if(!userInfo){
         return '토큰이 만료되었습니다'
       }else{
         this.reviewRepository.query(`UPDATE REVIEW SET del_yn='y', deleteDate='${date}' WHERE REVIEW.id=${req.query.n}`)
       }
-
     }
   }
-  
-
 
 }

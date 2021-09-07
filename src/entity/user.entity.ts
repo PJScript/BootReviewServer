@@ -35,9 +35,10 @@ export class User {
   @DeleteDateColumn()
   deleteDate: Date;
 
+  @Column({type:'text'})
+  refesh:string
+
   @OneToMany(type => Review, review => review.userId)
   review: Review
-
-  @OneToMany(type => Token, token => token.userId)
-  token:Token[]
+  
 }
