@@ -24,7 +24,7 @@ export class AuthController {
     res.header({Authorization:'Bearer ' + loginStatus.access_token})
     // 헤더에 엑세스 토큰 보내주기
     res.cookie('__Secure_A1',loginStatus.__Secure_A1,{
-      domain:'ec2-15-165-236-79.ap-northeast-2.compute.amazonaws.com',
+      sameSite:'none',
       maxAge:86400000,
       httpOnly:true,
       secure:true
@@ -36,7 +36,7 @@ export class AuthController {
   async logout(@Res() res){
     let __Secure_A1 = CryptoJS.SHA256('logout',this.configService.get('PATH_REFRESH_TOKEN'))
     res.cookie('__Secure_A1',__Secure_A1,{
-      domain:'ec2-15-165-236-79.ap-northeast-2.compute.amazonaws.com',
+      sameSite:'none',
       maxAge:86400000,
       httpOnly:true,
       secure:true
