@@ -27,7 +27,6 @@ export class AuthController {
       domain:'ec2-15-165-236-79.ap-northeast-2.compute.amazonaws.com',
       maxAge:86400000,
       httpOnly:true,
-      sameSite:true,
       secure:true
     })
     return res.status(200).send('login success');
@@ -40,7 +39,6 @@ export class AuthController {
       domain:'ec2-15-165-236-79.ap-northeast-2.compute.amazonaws.com',
       maxAge:86400000,
       httpOnly:true,
-      sameSite:true,
       secure:true
     })
     res.status(200).send('로그아웃 성공')
