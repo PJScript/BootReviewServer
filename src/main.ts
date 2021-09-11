@@ -9,8 +9,10 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     allowedHeaders: 'Content-Type, Authorization',
+    exposedHeaders: ['Authorization']
   })
   app.use(cookieparser())
+
   await app.listen(4000);
 }
 bootstrap();

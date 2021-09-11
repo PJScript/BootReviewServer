@@ -59,9 +59,7 @@ export class AuthService {
       account:user.account
     };
     let __Secure_A1 = CryptoJS.AES.encrypt(user.account, this.configService.get('PATH_REFRESH_TOKEN')).toString()
-    let decrypt = CryptoJS.AES.decrypt(__Secure_A1, this.configService.get('PATH_REFRESH_TOKEN'))
-    let targetUser = decrypt.toString(CryptoJS.enc.Utf8);
- 
+
     let access_token = this.jwtService.sign(payload,{secret:this.configService.get('TOKEN_SECRET'),expiresIn:'60s'}) // 해당 토큰이 만료되면 재 로그인 필요.
     let refreshToken
     
@@ -71,8 +69,6 @@ export class AuthService {
     // 여기까지 왔으면 db 검증 완료된 상태 토큰 만들어줌
     
     let refreshCheck = await this.tokenRepository.findOne({ where : { key :user.account, expired : 'n' } })
-    
-    console.log(refreshCheck,'리프레시 체크')
     
     if(!refreshCheck){  // make refresh Token if login success after not found refresh Token in database 
       refreshToken = await this.jwtService.sign(payload,{secret:this.configService.get('TOKEN_SECRET'),expiresIn:'10s'})
@@ -90,7 +86,6 @@ export class AuthService {
       checkExpired.setHours(checkExpired.getHours() + 9)
 
       if (refreshCheck.due_date < checkExpired) {
-        console.log("작동@@@@@@@@@@@@@@@@@@@@@@@@@@")
         refreshToken = await this.jwtService.sign(payload,{secret:this.configService.get('TOKEN_SECRET'),expiresIn:'24h'})
         await this.tokenRepository.createQueryBuilder()  // 토큰 만료 시키기
           .update('TOKEN')
@@ -108,20 +103,25 @@ export class AuthService {
           }).execute()
       }
     }
-    // access_token을 http header authorization 에 저장해서 보내줌
-    // cookie에 account를 암호화한 __Secure이름의 쿠키를 보내줌
-    // 서버에서는 __Secure 쿠키를 해독 후 TOKEN 테이블 id로 조회 맨 마지막 값만 가져오면 됨 
-    // refresh token의 due_date를 확인 후 만료되었다면 만료 알림
-    // 만료되지 않았다면 새로운 엑세스 토큰 발급
-    
     return {
       access_token: access_token,
       __Secure_A1:__Secure_A1
     }
   }
-  
-  async signUp ({account,pw,name,gender,sns}): Promise<any>{
+  async ReissuanceAccessToken (req){
 
+    let decode = CryptoJS.AES.decrypt(req.cookies.__Secure_A1,this.configService.get('PATH_REFRESH_TOKEN'))
+    let userAccount = decode.toString(CryptoJS.enc.Utf8)
+    let refreshCheck = this.tokenRepository.findOne({key:userAccount, expired:'n'})
+
+    if(!refreshCheck){
+      return {code:'L1001',message:'token expired'}
+    }else{
+      let access_token = this.jwtService.sign({account:userAccount},{secret:this.configService.get('TOKEN_SECRET'),expiresIn:'60s'})
+      return access_token
+    }
+  }
+  async signUp ({account,pw,name,gender,sns}): Promise<any>{
     let hashedPw: string = CryptoJS.SHA256(pw,this.configService.get('TOKEN_SECRET')).toString()
     // 비번 sha256함수로 암호화
     this.userRepository.createQueryBuilder()
