@@ -11,6 +11,12 @@ export class AuthController {
     private configService: ConfigService
     ){}
   
+  @Get()
+  async test(@Req() req){
+    return 'hi'
+  }
+
+
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Req() req, @Res() res){
