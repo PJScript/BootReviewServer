@@ -20,6 +20,7 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Req() req, @Res() res){
+    console.log('로그인 작동함')
     let loginStatus = await this.authService.login(req.body)
     res.header({Authorization:'Bearer ' + loginStatus.access_token})
     // 헤더에 엑세스 토큰 보내주기
