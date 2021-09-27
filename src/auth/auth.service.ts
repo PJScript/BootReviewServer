@@ -105,6 +105,7 @@ export class AuthService {
     }
     return {
       access_token: access_token,
+      account:payload.account,
       __Secure_A1:__Secure_A1
     }
   }
@@ -122,19 +123,27 @@ export class AuthService {
     }
   }
   async signUp ({account,pw,name,gender,sns}): Promise<any>{
-    let hashedPw: string = CryptoJS.SHA256(pw,this.configService.get('TOKEN_SECRET')).toString()
-    // 비번 sha256함수로 암호화
-    this.userRepository.createQueryBuilder()
-    .insert()
-    .into('USER')
-    .values({
-      account:account,
-      pw:hashedPw,
-      name:name,
-      gender:gender,
-      sns:sns,
-      del_yn:'n'
-    }).execute();
+    let userAccount = await this.userRepository.findOne({account:account})
+    if(!userAccount){
+      let hashedPw: string = CryptoJS.SHA256(pw,this.configService.get('TOKEN_SECRET')).toString()
+      // 비번 sha256함수로 암호화
+      await this.userRepository.createQueryBuilder()
+      .insert()
+      .into('USER')
+      .values({
+        account:account,
+        pw:hashedPw,
+        name:name,
+        gender:gender,
+        sns:sns,
+        del_yn:'n'
+      }).execute();
+
+      return 1
+    }else{
+      return 0
+    }
+
   }
 
   async profile(token:any):Promise<any>{

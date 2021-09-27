@@ -58,8 +58,12 @@ export class AuthController {
   }
   @Post('signup')
   async signUp(@Req() req, @Res() res){
-    this.authService.signUp(req.body)
-    res.status(200).send(req.body)
+    let accountCheck = await this.authService.signUp(req.body)
+    if(accountCheck === 1){
+      res.status(200).send('success')
+    }else{
+      res.status(409).send('This email has already been signed up.')
+    }
   }
 
   @UseGuards(JwtAuthGuard)
