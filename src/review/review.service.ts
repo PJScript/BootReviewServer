@@ -28,19 +28,15 @@ export class ReviewService {
   async getReview(query){// , ,   
     let page: number = Number(query.page)   //type 검사를 안함 **주의**
     let code: string = query.code   //type 검사를 안함 **주의**
-    
+    code = JSON.stringify(code)  // JSON으로 오기때문에 변환필요함
     if(page != 1){  // 중복 컨텐츠 해결
       page = page + 1
     }else{
       page = 1
     }
-
-    let reviewList = 
-    await this.reviewRepository.query(`
-    SELECT REVIEW.*,USER.account, USER.name, PLATFORM.name 
-    from REVIEW LEFT JOIN USER on REVIEW.userId = USER.id LEFT JOIN PLATFORM on REVIEW.platformId = PLATFORM.id 
-    where platformId='${code}' ORDER BY id DESC limit ${page},8;
-    `)
+    console.log(typeof(code))
+    console.log(code)
+    let reviewList = await this.reviewRepository.query(`select * from REVIEW where platformCode=${code} ORDER BY id DESC`)
     //클라이언트에서 1페이지 2페이지 페이지 정보를 보내줌.
     // DB에서 가져올 때 page 부터 n개 전송
     return reviewList
@@ -51,9 +47,10 @@ export class ReviewService {
     return test
   }
 
-  async insertReview(req){
+  async insertReview(req, query){
+    console.log(query,"쿼리")
     let userInfo = await this.authService.validateToken(req.headers.authorization,1)
-    
+    console.log(userInfo,"유저인포")
     if(!userInfo){
       return '잘못된 접근'
     }else{

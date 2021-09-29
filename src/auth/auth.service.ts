@@ -31,6 +31,7 @@ export class AuthService {
   }   // first logic and go login function after done 
 
   async validateToken(token:any,option?:number):Promise<any>{  // 선택 매개변수 option  0,blank or other number
+    console.log()
     if(!option){  // option 0 or blank is get req.body
       try {
         return await this.jwtService.verify(token.split(' ')[1],{secret:this.configService.get('TOKEN_SECRET')})
@@ -58,7 +59,7 @@ export class AuthService {
     const payload = {
       account:user.account
     };
-    let __Secure_A1 = CryptoJS.AES.encrypt(user.account, this.configService.get('PATH_REFRESH_TOKEN')).toString()
+    let test = CryptoJS.AES.encrypt(user.account, this.configService.get('PATH_REFRESH_TOKEN')).toString()
 
     let access_token = this.jwtService.sign(payload,{secret:this.configService.get('TOKEN_SECRET'),expiresIn:'60s'}) // 해당 토큰이 만료되면 재 로그인 필요.
     let refreshToken
@@ -106,7 +107,7 @@ export class AuthService {
     return {
       access_token: access_token,
       account:payload.account,
-      __Secure_A1:__Secure_A1
+      test:test
     }
   }
   async ReissuanceAccessToken (req){
