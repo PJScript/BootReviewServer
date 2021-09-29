@@ -59,7 +59,7 @@ export class AuthService {
     const payload = {
       account:user.account
     };
-    let test = CryptoJS.AES.encrypt(user.account, this.configService.get('PATH_REFRESH_TOKEN')).toString()
+    let __Secure_A1 = CryptoJS.AES.encrypt(user.account, this.configService.get('PATH_REFRESH_TOKEN')).toString()
 
     let access_token = this.jwtService.sign(payload,{secret:this.configService.get('TOKEN_SECRET'),expiresIn:'60s'}) // 해당 토큰이 만료되면 재 로그인 필요.
     let refreshToken
@@ -107,7 +107,7 @@ export class AuthService {
     return {
       access_token: access_token,
       account:payload.account,
-      test:test
+      __Secure_A1:__Secure_A1
     }
   }
   async ReissuanceAccessToken (req){
