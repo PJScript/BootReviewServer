@@ -25,7 +25,7 @@ export class AuthController {
     let loginStatus = await this.authService.login(req.body)
     res.header({Authorization:'Bearer ' + loginStatus.access_token})
     // 헤더에 엑세스 토큰 보내주기
-    res.cookie('test',loginStatus.test,{
+    res.cookie('__Secure_A1',loginStatus.__Secure_A1,{
       samesite:'None',
       secure:true,
       httpOnly:true,
