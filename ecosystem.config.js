@@ -8,16 +8,14 @@ module.exports = {
       watch: true, // 파일이 변경되면 자동으로 재실행 (true || false)
       env: {
         "NODE_ENV": "development", // 개발환경시 적용될 설정 지정
-        "TOKEN_SECRET" : "CQ7ERGKXJ",
-"TOKEN_SALT": "ROCKET",
-
-"PATH_REFRESH_TOKEN" : "REFRESH_HELLO123@",
-
-"DB_HOST" : "bootreview.cq7ergkxjze4.ap-northeast-2.rds.amazonaws.com",
-"DB_USERNAME" : "admin",
-"DB_PASSWORD" : "admin1346",
-"DB_PORT" : 3306,
-"DB_DATABASE_NAME" : "BootReview"
+        "TOKEN_SECRET": "CQ7ERGKXJ",
+        "TOKEN_SALT": "ROCKET",
+        "PATH_REFRESH_TOKEN": "REFRESH_HELLO123@",
+        "DB_HOST": "bootreview.cq7ergkxjze4.ap-northeast-2.rds.amazonaws.com",
+        "DB_USERNAME": "admin",
+        "DB_PASSWORD": "admin1346",
+        "DB_PORT": 3306,
+        "DB_DATABASE_NAME": "BootReview"
       },
       env_production: {
         "NODE_ENV": "production" // 배포환경시 적용될 설정 지정
