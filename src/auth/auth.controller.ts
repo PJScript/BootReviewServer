@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport'
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import * as CryptoJS from 'crypto-js'
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -24,11 +25,13 @@ export class AuthController {
     let loginStatus = await this.authService.login(req.body)
     res.header({Authorization:'Bearer ' + loginStatus.access_token})
     // 헤더에 엑세스 토큰 보내주기
-    res.cookie('__Secure_A1',loginStatus.__Secure_A1,{
-      sameSite:'none',
-      maxAge:86400000,
+    res.cookie('test',loginStatus.test,{
+      samesite:'None',
+      secure:true,
       httpOnly:true,
-      secure:true
+      maxAge:86400000,
+      domain:".bootview.info",
+      path:'/'
     })
     return res.status(200).send('login success');
   }
