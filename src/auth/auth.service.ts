@@ -111,11 +111,15 @@ export class AuthService {
     }
   }
   async ReissuanceAccessToken (req){
-
+    console.log(req.cookies.__Secure_A1,"시큐어 쿠키")
+    let a = this.configService.get('PATH_REFRESH_TOKEN')
+    console.log(a,"솔트", typeof(a),"타입")
     let decode = CryptoJS.AES.decrypt(req.cookies.__Secure_A1, this.configService.get('PATH_REFRESH_TOKEN'))
     console.log(decode,"디코드")
-    let userAccount = decode.toString(CryptoJS.enc.Utf8)
-    let refreshCheck = this.tokenRepository.findOne({key:userAccount, expired:'n'})
+    let userAccount = await decode.toString(CryptoJS.enc.Utf8)
+    console.log(userAccount,"유저어카운트")
+    let refreshCheck = await this.tokenRepository.findOne({key:userAccount, expired:'n'})
+    console.log(refreshCheck)
 
     if(!refreshCheck){
       return {code:'L1001',message:'token expired'}
