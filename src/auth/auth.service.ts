@@ -112,7 +112,8 @@ export class AuthService {
   }
   async ReissuanceAccessToken (req){
 
-    let decode = CryptoJS.AES.decrypt(req.cookies.__Secure_A1,this.configService.get('PATH_REFRESH_TOKEN'))
+    let decode = CryptoJS.AES.decrypt(req.cookies.__Secure_A1, this.configService.get('PATH_REFRESH_TOKEN'))
+    console.log(decode,"디코드")
     let userAccount = decode.toString(CryptoJS.enc.Utf8)
     let refreshCheck = this.tokenRepository.findOne({key:userAccount, expired:'n'})
 
