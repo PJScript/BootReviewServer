@@ -1,5 +1,4 @@
 'use strict';
-import 'dotenv/config';
 
 module.exports = {
   
@@ -25,3 +24,5 @@ module.exports = {
     }
   ]
 };
+
+

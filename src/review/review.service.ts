@@ -49,15 +49,24 @@ export class ReviewService {
 
   async insertReview(req, query){
     console.log(query,"쿼리")
+    console.log(req.body,"바디")
+
     let userInfo = await this.authService.validateToken(req.headers.authorization,1)
-    console.log(userInfo,"유저인포")
+    console.log(userInfo[0].id,"유저인포")
     if(!userInfo){
       return '잘못된 접근'
     }else{
-      let result = await this.reviewRepository.query(`
-      INSERT INTO REVIEW (title,content,accessCount, del_yn,userId,platformCode) 
-      VALUES ('${req.body.title}','${req.body.content}',0,'n',${userInfo[0].id},'${req.query.c}')`)
-    return {"id":result.insertId}  //클라이언트에 전송
+      await this.reviewRepository.createQueryBuilder()
+      .insert()
+      .into('REVIEW')
+      .values({
+        title:req.body.title,
+        content:req.body.content,
+        accessCount:0,
+        userId:userInfo[0].id,
+        platformCode:query.code
+      }).execute()
+      return 0;
   }
 }
 
