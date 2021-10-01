@@ -114,7 +114,7 @@ export class AuthService {
     console.log(req.cookies.__Secure_A1,"시큐어 쿠키")
     let a = this.configService.get('PATH_REFRESH_TOKEN')
     console.log(a,"솔트", typeof(a),"타입")
-    let decode = CryptoJS.AES.decrypt(req.cookies.t__Secure_A1, this.configService.get('PATH_REFRESH_TOKEN'))
+    let decode = CryptoJS.AES.decrypt(req.cookies.__Secure_A1, this.configService.get('PATH_REFRESH_TOKEN'))
     console.log(decode,"디코드")
     let userAccount = await decode.toString(CryptoJS.enc.Utf8)
     console.log(userAccount,"유저어카운트")
