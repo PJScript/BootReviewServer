@@ -43,7 +43,8 @@ export class AuthController {
       sameSite:'none',
       maxAge:86400000,
       httpOnly:true,
-      secure:true
+      domain:'.bootview.info',
+      path:'/'
     })
     res.status(200).send('로그아웃 성공')
   }
