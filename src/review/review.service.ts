@@ -36,9 +36,11 @@ export class ReviewService {
     }
     console.log(typeof(code))
     console.log(code)
-    let reviewList = await this.reviewRepository.query(`select * from REVIEW where platformCode=${code} ORDER BY id DESC`)
+
+    let reviewList = await this.reviewRepository.query(`SELECT REVIEW.id,REVIEW.title,REVIEW.content,REVIEW.createDate,USER.name FROM REVIEW LEFT JOIN USER on REVIEW.userId = USER.id  WHERE platformCode=${code} ORDER BY REVIEW.id DESC`)
     //클라이언트에서 1페이지 2페이지 페이지 정보를 보내줌.
     // DB에서 가져올 때 page 부터 n개 전송
+    console.log(reviewList)
     return reviewList
   }
 
