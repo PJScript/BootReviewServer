@@ -25,7 +25,7 @@ export class AuthController {
     let loginStatus = await this.authService.login(req.body)
     res.header({Authorization:'Bearer ' + loginStatus.access_token})
     // 헤더에 엑세스 토큰 보내주기
-    res.cookie('__Secure_A1',loginStatus.__Secure_A1,{
+    res.cookie('test',loginStatus.test,{
       samesite:'None',
       secure:true,
       httpOnly:true,
@@ -38,8 +38,8 @@ export class AuthController {
 
   @Get('logout')  // 로그아웃 시 쿠키의 값을 알 수 없는 임의의 값으로 대체
   async logout(@Res() res){
-    let __Secure_A1 = CryptoJS.SHA256('logout',this.configService.get('PATH_REFRESH_TOKEN'))
-    res.cookie('__Secure_A1',__Secure_A1,{
+    let test = CryptoJS.SHA256('logout',this.configService.get('PATH_REFRESH_TOKEN'))
+    res.cookie('test',test,{
       sameSite:'none',
       maxAge:86400000,
       httpOnly:true,
