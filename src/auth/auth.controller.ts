@@ -71,6 +71,17 @@ export class AuthController {
       res.status(409).send('This email has already been signed up.')
     }
   }
+  
+  @UseGuards(JwtAuthGuard)
+  @Post('valid')
+  async checkName(@Req() req, @Res() res){
+    let data = await this.authService.checkName(req)
+    if(data){
+      res.status(200).send("변경할 수 있습니다")
+    }else{
+      res.status(409).send({code:"L1003",msg:"exist nickname"})
+    }
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')

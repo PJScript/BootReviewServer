@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as CryptoJS from 'crypto-js'
 import { ConfigService } from '@nestjs/config';
 import { Token } from 'src/entity/token.entity';
-
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -110,11 +110,11 @@ export class AuthService {
       __Secure_A1:__Secure_A1
     }
   }
-  async ReissuanceAccessToken (req){
+  async ReissuanceAccessToken (req :Request){
     console.log(req.cookies.__Secure_A1,"시큐어 쿠키")
     let a = this.configService.get('PATH_REFRESH_TOKEN')
     console.log(a,"솔트", typeof(a),"타입")
-    let decode = CryptoJS.AES.decrypt(req.cookies.t__Secure_A1, this.configService.get('PATH_REFRESH_TOKEN'))
+    let decode = CryptoJS.AES.decrypt(req.cookies.__Secure_A1, this.configService.get('PATH_REFRESH_TOKEN'))
     console.log(decode,"디코드")
     let userAccount = await decode.toString(CryptoJS.enc.Utf8)
     console.log(userAccount,"유저어카운트")
@@ -150,6 +150,20 @@ export class AuthService {
       return 0
     }
 
+  }
+  
+  async checkName(req :Request):Promise<any>{
+    console.log(req.headers)
+    let tokenValid = await this.validateToken(req.headers.authorization,1)
+    console.log(tokenValid,"토큰발리드")
+    let userNameValid = await this.userRepository.findOne({name:req.body.name})
+
+    console.log(userNameValid)
+    if(!userNameValid){
+      return true    // 닉네임이 없으면
+    }else{
+      return false  // 닉네임이 존재한다면
+    }
   }
 
   async profile(token:any):Promise<any>{
