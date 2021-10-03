@@ -72,7 +72,7 @@ export class AuthController {
     }
   }
   
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('valid')
   async checkName(@Req() req, @Res() res){
     let data = await this.authService.checkName(req)
