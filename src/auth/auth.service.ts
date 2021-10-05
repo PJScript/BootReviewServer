@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user.entity';
+import { Review } from 'src/entity/review.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as CryptoJS from 'crypto-js'
@@ -13,6 +14,9 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+
+    @InjectRepository(Review)
+    private reviewRepository: Repository<Review>,
 
     @InjectRepository(Token)
     private tokenRepository: Repository<Token>,
@@ -30,6 +34,7 @@ export class AuthService {
     msg:'not fount user Or password valid error'}
   }   // first logic and go login function after done 
 
+  // 토큰 확인 후 req를 그대로 반환 or 토큰 확인 후 DB 조회 값 반환
   async validateToken(token:any,option?:number):Promise<any>{  // 선택 매개변수 option  0,blank or other number
     console.log()
     if(!option){  // option 0 or blank is get req.body
@@ -166,9 +171,27 @@ export class AuthService {
     }
   }
 
-  async profile(token:any):Promise<any>{
+  async profile(token:any, query:{p :string}) :Promise<any>{
+    console.log(query.p,"쿼리")
+    let p = parseInt(query.p)
+    let min
+    let max
+    if(p === 1){
+      min = 0
+      max = 8
+    }else{      
+      max = p * 8 
+      min = max / 2 + 1
+    }
+    // console.log(query.p,"쿼리")
+    
     let getUserInfo = await this.validateToken(token,1)
-      return getUserInfo
+      console.log(getUserInfo)
+      console.log(getUserInfo[0].id,"유저아디")
+      let userId = getUserInfo[0].id
+      let getUserReview = await this.reviewRepository.query(`select id,title, createDate, platformCode from REVIEW where userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max} `)
+      console.log(getUserReview,"유저리뷰")
+      return getUserReview
   }
 }
 
