@@ -183,14 +183,15 @@ export class AuthService {
       max = p * 8 
       min = max / 2 + 1
     }
+    console.log(max,"맥스", min,"민")
     // console.log(query.p,"쿼리")
-    
+    console.log('ㅁ')
     let getUserInfo = await this.validateToken(token,1)
       console.log(getUserInfo)
       console.log(getUserInfo[0].id,"유저아디")
       let userId = getUserInfo[0].id
-      let getUserReview = await this.reviewRepository.query(`select id,title, createDate, platformCode from REVIEW where userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max} `)
-      console.log(getUserReview,"유저리뷰")
+      let getUserReview = await this.reviewRepository.query(`select id,title, createDate, platformCode from REVIEW where userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
+      console.log(getUserReview,p,"유저리뷰")
       return getUserReview
   }
 }
