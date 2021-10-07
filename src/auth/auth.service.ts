@@ -181,7 +181,7 @@ export class AuthService {
       max = 8
     }else{      
       max = p * 8 
-      min = max / 2 + 1
+      min = max - 8 + 1
     }
     console.log(max,"맥스", min,"민")
     // console.log(query.p,"쿼리")
@@ -191,8 +191,9 @@ export class AuthService {
       console.log(getUserInfo[0].id,"유저아디")
       let userId = getUserInfo[0].id
       let getUserReview = await this.reviewRepository.query(`select id,title, createDate, platformCode from REVIEW where userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
+      let pageCount = await this.reviewRepository.query(`SELECT count(*) as cnt FROM REVIEW WHERE userId = ${userId} AND del_yn = 'n'`)
       console.log(getUserReview,p,"유저리뷰")
-      return getUserReview
+      return {Reviews:getUserReview,Count:pageCount[0]}
   }
 }
 
