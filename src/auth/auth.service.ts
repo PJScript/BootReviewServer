@@ -49,7 +49,7 @@ export class AuthService {
     }else{  // option other number is get DB userInfo
       try{
         let verify = this.jwtService.verify(token.split(' ')[1],{secret:this.configService.get('TOKEN_SECRET')})
-        return this.userRepository.query(`SELECT id,account,gender,name,createDate,updateOn FROM USER WHERE account = '${verify.account}' AND del_yn = 'n'`)
+        return this.userRepository.query(`SELECT id,pw,account,gender,name,createDate,updateOn FROM USER WHERE account = '${verify.account}' AND del_yn = 'n'`)
       }catch(error){
         throw new HttpException({
           status: HttpStatus.UNAUTHORIZED,
@@ -190,10 +190,38 @@ export class AuthService {
       console.log(getUserInfo)
       console.log(getUserInfo[0].id,"유저아디")
       let userId = getUserInfo[0].id
-      let getUserReview = await this.reviewRepository.query(`select id,title, createDate, platformCode from REVIEW where userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
+      let getUserReview = await this.reviewRepository.query(`SELECT id,title, createDate, platformCode FROM REVIEW WHERE userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
       let pageCount = await this.reviewRepository.query(`SELECT count(*) as cnt FROM REVIEW WHERE userId = ${userId} AND del_yn = 'n'`)
       console.log(getUserReview,p,"유저리뷰")
       return {Reviews:getUserReview,Count:pageCount[0]}
+  }
+
+  async changeNickName(req :Request):Promise<any>{
+    console.log(req.headers.authorization)
+    console.log(req.body,"바디")
+    let userData = await this.validateToken(req.headers.authorization,1)
+    console.log(userData,"유저데이터")
+    // this.validateToken(req.header)
+
+    if(!userData){
+      return false
+    }else{
+      return await this.userRepository.query(`UPDATE USER SET name = '${req.body.nickname}' WHERE id='${userData[0].id}'`)
+    }
+  }
+
+  async changePassword(req :Request):Promise<any>{
+    let userData = await this.validateToken(req.headers.authorization,1)
+    let userPw = userData[0].pw
+    let inputPrevPw :string = CryptoJS.SHA256(req.body.prevPw,this.configService.get('TOKEN_SECRET')).toString()
+    let hashedPw :string = CryptoJS.SHA256(req.body.newPw, this.configService.get('TOKEN_SECRET')).toString()
+    if(userPw.toString() !== inputPrevPw.toString()){
+      return false
+    }else{
+      await this.userRepository.query(`UPDATE USER SET pw='${hashedPw}' WHERE id=${userData[0].id}`)
+      return true
+    }
+
   }
 }
 

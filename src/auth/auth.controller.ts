@@ -84,6 +84,18 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('change/nickname')
+  changeNickName(@Req() req){
+    return this.authService.changeNickName(req);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change/password')
+  changePassword(@Req() req){
+    return this.authService.changePassword(req)
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Req() req, @Query() query){
     return this.authService.profile(req.headers.authorization, query);
