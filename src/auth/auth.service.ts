@@ -190,7 +190,7 @@ export class AuthService {
       console.log(getUserInfo)
       console.log(getUserInfo[0].id,"유저아디")
       let userId = getUserInfo[0].id
-      let getUserReview = await this.reviewRepository.query(`SELECT id,title, createDate, platformCode FROM REVIEW WHERE userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
+      let getUserReview = await this.reviewRepository.query(`SELECT id,title, content,createDate, platformCode FROM REVIEW WHERE userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
       let pageCount = await this.reviewRepository.query(`SELECT count(*) as cnt FROM REVIEW WHERE userId = ${userId} AND del_yn = 'n'`)
       console.log(getUserReview,p,"유저리뷰")
       return {Reviews:getUserReview,Count:pageCount[0]}

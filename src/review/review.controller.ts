@@ -28,6 +28,12 @@ export class ReviewController {
     console.log('hi')
     return this.reviewService.removeReview(req);
   }
+  @UseGuards(JwtAuthGuard)
+  @Post('patch')
+  patchReview(@Req() req: Request){
+    console.log('게시물 수정')
+    return this.reviewService.patchReview(req)
+  }
 
   @Post('platform')  
   insertReview(@Req() req: Request, @Query() query: string){

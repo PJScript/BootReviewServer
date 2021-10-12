@@ -72,6 +72,21 @@ export class ReviewService {
       return 0;
   }
 }
+async patchReview(req){
+  if(!req.headers.authorization){
+    return '토큰이 없습니다'
+  }else{
+    let userInfo = await this.authService.validateToken(req.headers.authorization,1)
+    console.log(userInfo,"토큰 해독 후 유저정보")
+    if(!userInfo){
+      return '토큰이 만료되었습니다'
+    }else{ // 요청보낸 유저가 삭제할 글의 소유자라면
+      await this.reviewRepository.query(`UPDATE REVIEW SET title='${req.body.title}', content='${req.body.content}' WHERE id=${req.body.id} AND userId=${userInfo[0].id}`)
+      return 'good'
+    }
+  }
+}
+
 
   async removeReview (req){
     if(!req.headers.authorization){
