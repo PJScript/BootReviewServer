@@ -1,6 +1,7 @@
 
 **링크**: https://bootview.info/
-### 우측 상단 게스트 로그인
+##### first step
+- **우측 상단 게스트 로그인**
 
 # 사용 스택
 - NestJs
