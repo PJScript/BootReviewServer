@@ -36,9 +36,11 @@ export class ReviewService {
     }
     console.log(typeof(code))
     console.log(code)
-    let reviewList = await this.reviewRepository.query(`select * from REVIEW where platformCode=${code} ORDER BY id DESC`)
+
+    let reviewList = await this.reviewRepository.query(`SELECT REVIEW.id,REVIEW.title,REVIEW.content,REVIEW.createDate,USER.name FROM REVIEW LEFT JOIN USER on REVIEW.userId = USER.id  WHERE platformCode=${code} AND REVIEW.del_yn="n" ORDER BY REVIEW.id DESC`)
     //클라이언트에서 1페이지 2페이지 페이지 정보를 보내줌.
     // DB에서 가져올 때 page 부터 n개 전송
+    console.log(reviewList)
     return reviewList
   }
 
@@ -49,29 +51,59 @@ export class ReviewService {
 
   async insertReview(req, query){
     console.log(query,"쿼리")
+    console.log(req.body,"바디")
+
     let userInfo = await this.authService.validateToken(req.headers.authorization,1)
-    console.log(userInfo,"유저인포")
+    console.log(userInfo[0].id,"유저인포")
     if(!userInfo){
       return '잘못된 접근'
     }else{
-      let result = await this.reviewRepository.query(`
-      INSERT INTO REVIEW (title,content,accessCount, del_yn,userId,platformCode) 
-      VALUES ('${req.body.title}','${req.body.content}',0,'n',${userInfo[0].id},'${req.query.c}')`)
-    return {"id":result.insertId}  //클라이언트에 전송
+      await this.reviewRepository.createQueryBuilder()
+      .insert()
+      .into('REVIEW')
+      .values({
+        title:req.body.title,
+        content:req.body.content,
+        accessCount:0,
+        userId:userInfo[0].id,
+        del_yn:'n',
+        platformCode:query.code
+      }).execute()
+      return 0;
+  }
+}
+async patchReview(req){
+  if(!req.headers.authorization){
+    return '토큰이 없습니다'
+  }else{
+    let userInfo = await this.authService.validateToken(req.headers.authorization,1)
+    console.log(userInfo,"토큰 해독 후 유저정보")
+    if(!userInfo){
+      return '토큰이 만료되었습니다'
+    }else{ // 요청보낸 유저가 삭제할 글의 소유자라면
+      await this.reviewRepository.query(`UPDATE REVIEW SET title='${req.body.title}', content='${req.body.content}' WHERE id=${req.body.id} AND userId=${userInfo[0].id}`)
+      return 'good'
+    }
   }
 }
 
-  async removeReview(req){
+
+  async removeReview (req){
     if(!req.headers.authorization){
       return '토큰이 없습니다'
     }else{
-      let date = new Date()
-      date.toISOString()  // 삭제시간 한국기준
-      let userInfo = await this.authService.validateToken(req.headers.authorization)
+      let date = new Date() // 삭제시간 한국기준
+      console.log(date,"날짜")
+  
+      date.setHours(date.getHours() + 9)
+      console.log(date,"수정된 날짜")
+      let userInfo = await this.authService.validateToken(req.headers.authorization,1)
+      console.log(userInfo,"토큰 해독 후 유저정보")
       if(!userInfo){
         return '토큰이 만료되었습니다'
-      }else{
-        this.reviewRepository.query(`UPDATE REVIEW SET del_yn='y', deleteDate='${date}' WHERE REVIEW.id=${req.query.n}`)
+      }else if(userInfo[0].account === req.body.account){ // 요청보낸 유저가 삭제할 글의 소유자라면
+        await this.reviewRepository.query(`UPDATE REVIEW SET del_yn="y", deleteDate="${date.toISOString()}" WHERE id=${req.body.id} AND userId=${userInfo[0].id} AND title='${req.body.title}'`)
+        return 'good'
       }
     }
   }

@@ -18,17 +18,25 @@ export class ReviewController {
     res.status(200).send(allReview)
   }
   @Get()
-  getAllUser(@Req() req: string){
+  getAllUser(@Req() req: Request){
     return this.reviewService.getAllUser();     // go  review.service.ts
   }
+  
+  @UseGuards(JwtAuthGuard)
   @Post('/delete/platform')
-  removeReview(@Req() req: string){
+  removeReview(@Req() req: Request){
     console.log('hi')
     return this.reviewService.removeReview(req);
   }
+  @UseGuards(JwtAuthGuard)
+  @Post('patch')
+  patchReview(@Req() req: Request){
+    console.log('게시물 수정')
+    return this.reviewService.patchReview(req)
+  }
 
   @Post('platform')  
-  insertReview(@Req() req: string, @Query() query: string){
+  insertReview(@Req() req: Request, @Query() query: string){
     return this.reviewService.insertReview(req, query);
   }
 

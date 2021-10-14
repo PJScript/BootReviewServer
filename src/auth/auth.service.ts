@@ -1,18 +1,22 @@
 import { HttpException, HttpStatus, Injectable, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user.entity';
+import { Review } from 'src/entity/review.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as CryptoJS from 'crypto-js'
 import { ConfigService } from '@nestjs/config';
 import { Token } from 'src/entity/token.entity';
-
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+
+    @InjectRepository(Review)
+    private reviewRepository: Repository<Review>,
 
     @InjectRepository(Token)
     private tokenRepository: Repository<Token>,
@@ -30,6 +34,7 @@ export class AuthService {
     msg:'not fount user Or password valid error'}
   }   // first logic and go login function after done 
 
+  // 토큰 확인 후 req를 그대로 반환 or 토큰 확인 후 DB 조회 값 반환
   async validateToken(token:any,option?:number):Promise<any>{  // 선택 매개변수 option  0,blank or other number
     console.log()
     if(!option){  // option 0 or blank is get req.body
@@ -44,7 +49,7 @@ export class AuthService {
     }else{  // option other number is get DB userInfo
       try{
         let verify = this.jwtService.verify(token.split(' ')[1],{secret:this.configService.get('TOKEN_SECRET')})
-        return this.userRepository.query(`SELECT id,account,gender,name,createDate,updateOn FROM USER WHERE account = '${verify.account}' AND del_yn = 'n'`)
+        return this.userRepository.query(`SELECT id,pw,account,gender,name,createDate,updateOn FROM USER WHERE account = '${verify.account}' AND del_yn = 'n'`)
       }catch(error){
         throw new HttpException({
           status: HttpStatus.UNAUTHORIZED,
@@ -110,11 +115,16 @@ export class AuthService {
       __Secure_A1:__Secure_A1
     }
   }
-  async ReissuanceAccessToken (req){
-
-    let decode = CryptoJS.AES.decrypt(req.cookies.__Secure_A1,this.configService.get('PATH_REFRESH_TOKEN'))
-    let userAccount = decode.toString(CryptoJS.enc.Utf8)
-    let refreshCheck = this.tokenRepository.findOne({key:userAccount, expired:'n'})
+  async ReissuanceAccessToken (req :Request){
+    console.log(req.cookies.__Secure_A1,"시큐어 쿠키")
+    let a = this.configService.get('PATH_REFRESH_TOKEN')
+    console.log(a,"솔트", typeof(a),"타입")
+    let decode = CryptoJS.AES.decrypt(req.cookies.__Secure_A1, this.configService.get('PATH_REFRESH_TOKEN'))
+    console.log(decode,"디코드")
+    let userAccount = await decode.toString(CryptoJS.enc.Utf8)
+    console.log(userAccount,"유저어카운트")
+    let refreshCheck = await this.tokenRepository.findOne({key:userAccount, expired:'n'})
+    console.log(refreshCheck)
 
     if(!refreshCheck){
       return {code:'L1001',message:'token expired'}
@@ -146,10 +156,72 @@ export class AuthService {
     }
 
   }
+  
+  async checkName(req :Request):Promise<any>{
+    console.log(req.headers)
+    let tokenValid = await this.validateToken(req.headers.authorization,1)
+    console.log(tokenValid,"토큰발리드")
+    let userNameValid = await this.userRepository.findOne({name:req.body.name})
 
-  async profile(token:any):Promise<any>{
+    console.log(userNameValid)
+    if(!userNameValid){
+      return true    // 닉네임이 없으면
+    }else{
+      return false  // 닉네임이 존재한다면
+    }
+  }
+
+  async profile(token:any, query:{p :string}) :Promise<any>{
+    console.log(query.p,"쿼리")
+    let p = parseInt(query.p)
+    let min
+    let max
+    if(p === 1){
+      min = 0
+      max = 8
+    }else{      
+      max = p * 8 
+      min = max - 8 + 1
+    }
+    console.log(max,"맥스", min,"민")
+    // console.log(query.p,"쿼리")
+    console.log('ㅁ')
     let getUserInfo = await this.validateToken(token,1)
-      return getUserInfo
+      console.log(getUserInfo)
+      console.log(getUserInfo[0].id,"유저아디")
+      let userId = getUserInfo[0].id
+      let getUserReview = await this.reviewRepository.query(`SELECT id,title, content,createDate, platformCode FROM REVIEW WHERE userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
+      let pageCount = await this.reviewRepository.query(`SELECT count(*) as cnt FROM REVIEW WHERE userId = ${userId} AND del_yn = 'n'`)
+      console.log(getUserReview,p,"유저리뷰")
+      return {Reviews:getUserReview,Count:pageCount[0]}
+  }
+
+  async changeNickName(req :Request):Promise<any>{
+    console.log(req.headers.authorization)
+    console.log(req.body,"바디")
+    let userData = await this.validateToken(req.headers.authorization,1)
+    console.log(userData,"유저데이터")
+    // this.validateToken(req.header)
+
+    if(!userData){
+      return false
+    }else{
+      return await this.userRepository.query(`UPDATE USER SET name = '${req.body.nickname}' WHERE id='${userData[0].id}'`)
+    }
+  }
+
+  async changePassword(req :Request):Promise<any>{
+    let userData = await this.validateToken(req.headers.authorization,1)
+    let userPw = userData[0].pw
+    let inputPrevPw :string = CryptoJS.SHA256(req.body.prevPw,this.configService.get('TOKEN_SECRET')).toString()
+    let hashedPw :string = CryptoJS.SHA256(req.body.newPw, this.configService.get('TOKEN_SECRET')).toString()
+    if(userPw.toString() !== inputPrevPw.toString()){
+      return false
+    }else{
+      await this.userRepository.query(`UPDATE USER SET pw='${hashedPw}' WHERE id=${userData[0].id}`)
+      return true
+    }
+
   }
 }
 

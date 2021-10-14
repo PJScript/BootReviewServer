@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport'
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -40,10 +40,13 @@ export class AuthController {
   async logout(@Res() res){
     let __Secure_A1 = CryptoJS.SHA256('logout',this.configService.get('PATH_REFRESH_TOKEN'))
     res.cookie('__Secure_A1',__Secure_A1,{
-      sameSite:'none',
-      maxAge:86400000,
+      sameSite:'None',
+      secure:true,
       httpOnly:true,
-      secure:true
+      maxAge:86400000,
+      domain:".bootview.info",
+      path:'/',
+
     })
     res.status(200).send('로그아웃 성공')
   }
@@ -68,10 +71,33 @@ export class AuthController {
       res.status(409).send('This email has already been signed up.')
     }
   }
+  
+  @UseGuards(JwtAuthGuard)
+  @Post('valid')
+  async checkName(@Req() req, @Res() res){
+    let data = await this.authService.checkName(req)
+    if(data){
+      res.status(200).send("변경할 수 있습니다")
+    }else{
+      res.status(409).send({code:"L1003",msg:"exist nickname"})
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change/nickname')
+  changeNickName(@Req() req){
+    return this.authService.changeNickName(req);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change/password')
+  changePassword(@Req() req){
+    return this.authService.changePassword(req)
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Req() req){
-    return this.authService.profile(req.headers.authorization);
+  getProfile(@Req() req, @Query() query){
+    return this.authService.profile(req.headers.authorization, query);
   }
 }
