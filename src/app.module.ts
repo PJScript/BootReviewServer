@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { ReviewModule } from './review/review.module';
+import { ChatModule } from './chat/chat.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entity/user.entity'
 import { ChartData } from './entity/chartData.entity'
@@ -37,6 +38,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     ReviewModule,
     AuthModule,
+    ChatModule
   ],
   
   controllers: [],
