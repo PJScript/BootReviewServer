@@ -61,9 +61,20 @@ export class AuthService {
 
   async login(user: any){         ////////////////////// 로그인 함수
     
-    const payload = {
-      account:user.account
-    };
+    let payload
+    
+    if(user.account === 'admin@admin.admin'){  // 관리자 인지 사용자인지 구분
+      payload = {
+        account:user.account,
+        role:['admin']
+      };
+    }else{
+      payload = {
+        account:user.account,
+        role:['user']
+      };
+    }
+    
     let __Secure_A1 = CryptoJS.AES.encrypt(user.account, this.configService.get('PATH_REFRESH_TOKEN')).toString()
 
     let access_token = this.jwtService.sign(payload,{secret:this.configService.get('TOKEN_SECRET'),expiresIn:'60s'}) // 해당 토큰이 만료되면 재 로그인 필요.
@@ -190,10 +201,15 @@ export class AuthService {
       console.log(getUserInfo)
       console.log(getUserInfo[0].id,"유저아디")
       let userId = getUserInfo[0].id
-      let getUserReview = await this.reviewRepository.query(`SELECT id,title, content,createDate, platformCode FROM REVIEW WHERE userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
-      let pageCount = await this.reviewRepository.query(`SELECT count(*) as cnt FROM REVIEW WHERE userId = ${userId} AND del_yn = 'n'`)
-      console.log(getUserReview,p,"유저리뷰")
-      return {Reviews:getUserReview,Count:pageCount[0]}
+      
+      if(userId === 2054){
+        return 'welcome admin'
+      }else{
+        let getUserReview = await this.reviewRepository.query(`SELECT id,title, content,createDate, platformCode FROM REVIEW WHERE userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
+        let pageCount = await this.reviewRepository.query(`SELECT count(*) as cnt FROM REVIEW WHERE userId = ${userId} AND del_yn = 'n'`)
+        console.log(getUserReview,p,"유저리뷰")
+        return {Reviews:getUserReview,Count:pageCount[0]}
+      }
   }
 
   async changeNickName(req :Request):Promise<any>{
@@ -221,7 +237,11 @@ export class AuthService {
       await this.userRepository.query(`UPDATE USER SET pw='${hashedPw}' WHERE id=${userData[0].id}`)
       return true
     }
+  }
 
+  async getAdminPage(req: Request):Promise<any>{
+    console.log(req.headers,"헤더스")
+    return 'good'
   }
 }
 

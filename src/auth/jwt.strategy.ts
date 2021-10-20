@@ -15,6 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
   validate(payload: any) {
+    console.log('여기 123')
     return {
       account:payload.account,
       gender:payload.gender,
