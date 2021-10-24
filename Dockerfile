@@ -9,5 +9,5 @@ RUN npm run build
 WORKDIR /usr
 
 CMD ["npm", "run", "start:dev"]
-# EXPOSE 8080
+EXPOSE 8080
 # EXPOSE 8888
