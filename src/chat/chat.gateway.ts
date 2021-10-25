@@ -9,7 +9,7 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Server } from 'socket.io';
 
-@WebSocketGateway(8888,{cors:true})
+@WebSocketGateway({cors:true})
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
