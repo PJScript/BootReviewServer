@@ -19,6 +19,7 @@ export class LocalStrategy extends PassportStrategy(Strategy){
 
   async validate(account: string, pw:string):Promise<any>{
     let  hashedPw = CryptoJS.SHA256(pw,this.configService.get('TOKEN_SECRET')).toString()
+    console.log('여기')
     const user = await this.authService.validateUser(account, hashedPw)
     if(!user) {
       throw new UnauthorizedException();

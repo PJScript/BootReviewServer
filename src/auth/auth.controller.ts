@@ -46,7 +46,6 @@ export class AuthController {
       maxAge:86400000,
       domain:".bootview.info",
       path:'/',
-
     })
     res.status(200).send('로그아웃 성공')
   }
@@ -100,4 +99,10 @@ export class AuthController {
   getProfile(@Req() req, @Query() query){
     return this.authService.profile(req.headers.authorization, query);
   }
+  
+  @Get('admin')
+  getAdminPage(@Req() req){
+    return this.authService.getAdminPage(req)
+  }
 }
+
