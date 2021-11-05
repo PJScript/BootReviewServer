@@ -127,15 +127,10 @@ export class AuthService {
     }
   }
   async ReissuanceAccessToken (req :Request){
-    console.log(req.cookies.__Secure_A1,"시큐어 쿠키")
     let a = this.configService.get('PATH_REFRESH_TOKEN')
-    console.log(a,"솔트", typeof(a),"타입")
     let decode = CryptoJS.AES.decrypt(req.cookies.__Secure_A1, this.configService.get('PATH_REFRESH_TOKEN'))
-    console.log(decode,"디코드")
     let userAccount = await decode.toString(CryptoJS.enc.Utf8)
-    console.log(userAccount,"유저어카운트")
     let refreshCheck = await this.tokenRepository.findOne({key:userAccount, expired:'n'})
-    console.log(refreshCheck)
 
     if(!refreshCheck){
       return {code:'L1001',message:'token expired'}
@@ -171,7 +166,6 @@ export class AuthService {
   async checkName(req :Request):Promise<any>{
     console.log(req.headers)
     let tokenValid = await this.validateToken(req.headers.authorization,1)
-    console.log(tokenValid,"토큰발리드")
     let userNameValid = await this.userRepository.findOne({name:req.body.name})
 
     console.log(userNameValid)
@@ -207,18 +201,13 @@ export class AuthService {
       }else{
         let getUserReview = await this.reviewRepository.query(`SELECT id,title, content,createDate, platformCode FROM REVIEW WHERE userId = ${userId} AND REVIEW.del_yn='n' ORDER BY REVIEW.id DESC limit ${min}, ${max}`)
         let pageCount = await this.reviewRepository.query(`SELECT count(*) as cnt FROM REVIEW WHERE userId = ${userId} AND del_yn = 'n'`)
-        console.log(getUserReview,p,"유저리뷰")
         return {Reviews:getUserReview,Count:pageCount[0]}
       }
   }
 
   async changeNickName(req :Request):Promise<any>{
-    console.log(req.headers.authorization)
-    console.log(req.body,"바디")
     let userData = await this.validateToken(req.headers.authorization,1)
-    console.log(userData,"유저데이터")
     // this.validateToken(req.header)
-
     if(!userData){
       return false
     }else{
@@ -243,8 +232,34 @@ export class AuthService {
     console.log(req.headers,"헤더스")
     return 'good'
   }
+
+  // adminRequest
+  async getUser(token:any, query:{p:string}):Promise<any>{
+    console.log(query.p,"쿼리")
+    let p = parseInt(query.p)
+    let min
+    let max
+    if(p === 1){
+      min = 0
+      max = 100
+    }else{      
+      max = p * 100 
+      min = max - 100 + 1
+    }
+    let getUserInfo = await this.validateToken(token,1)
+    let userId = getUserInfo[0].id
+      
+    if(userId === 2054){
+      return await this.userRepository.query(`SELECT id, account, gender, name FROM USER ORDER BY USER.id DESC limit ${min}, ${max}`)
+    }else{
+      return 0;
+    }
+  }
 }
 
+
+
+  
 
 // 로그인 요청이 오면 User 테이블에서 비밀번호가 맞는지 확인. 비번은 hash값으로 암호화 되어있음
 // 비밀번호가 맞다면 엑세스토큰, 리프레시 토큰 두가지를 발급한다. 리프레시 토큰은 TOKEN 테이블에 저장, 

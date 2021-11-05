@@ -99,7 +99,15 @@ export class AuthController {
   getProfile(@Req() req, @Query() query){
     return this.authService.profile(req.headers.authorization, query);
   }
+
+  // adminRequest
   
+  @Get('user')
+  getUser(@Req() req, @Query() query){
+    return this.authService.getUser(req.headers.authorization,query)
+  }
+
+
   @Get('admin')
   getAdminPage(@Req() req){
     return this.authService.getAdminPage(req)
