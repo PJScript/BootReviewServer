@@ -39,6 +39,4 @@ export class ReviewController {
   insertReview(@Req() req: Request, @Query() query: string){
     return this.reviewService.insertReview(req, query);
   }
-
-  
 }
