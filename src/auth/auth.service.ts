@@ -250,7 +250,9 @@ export class AuthService {
     let userId = getUserInfo[0].id
       
     if(userId === 2054){
-      return await this.userRepository.query(`SELECT id, account, gender, name FROM USER ORDER BY USER.id DESC limit ${min}, ${max}`)
+      let pageCount = await this.reviewRepository.query(`SELECT count(*) as cnt FROM USER WHERE del_yn = 'n'`)
+      let userList = await this.userRepository.query(`SELECT id, account, gender, name FROM USER ORDER BY USER.id DESC limit ${max},100`)
+      return { pageCount : pageCount, userList : userList }
     }else{
       return 0;
     }
