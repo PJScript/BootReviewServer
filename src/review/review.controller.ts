@@ -34,7 +34,12 @@ export class ReviewController {
     console.log('게시물 수정')
     return this.reviewService.patchReview(req)
   }
-
+  
+  @Get('reviews')
+  getReviews(@Req() req: Request, @Query() query){
+    console.log('모든 리뷰')
+    return this.reviewService.getReviews(req.headers.authorization, query)
+  }
   @Post('platform')  
   insertReview(@Req() req: Request, @Query() query: string){
     return this.reviewService.insertReview(req, query);
