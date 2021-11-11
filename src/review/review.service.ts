@@ -32,16 +32,18 @@ export class ReviewService {
     if(page != 1){  // 중복 컨텐츠 해결
       page = page + 1
     }else{
-      page = 1
+      page = Number(page)
     }
     console.log(typeof(code))
     console.log(code)
 
-    let reviewList = await this.reviewRepository.query(`SELECT REVIEW.id,REVIEW.title,REVIEW.content,REVIEW.createDate,USER.name FROM REVIEW LEFT JOIN USER on REVIEW.userId = USER.id  WHERE platformCode=${code} AND REVIEW.del_yn="n" ORDER BY REVIEW.id DESC`)
+    let reviewList = await this.reviewRepository.query(`SELECT REVIEW.id,REVIEW.title,REVIEW.content,REVIEW.createDate,USER.name FROM REVIEW LEFT JOIN USER on REVIEW.userId = USER.id  WHERE platformCode=${code} AND REVIEW.del_yn="n" ORDER BY REVIEW.id DESC limit ${page-1}, 9`)
+    let reviewPageCnt = await this.reviewRepository.query(`SELECT count(*) as cnt FROM REVIEW WHERE del_yn = 'n' AND platformCode=${code}`)
+    console.log(reviewPageCnt)
     //클라이언트에서 1페이지 2페이지 페이지 정보를 보내줌.
     // DB에서 가져올 때 page 부터 n개 전송
     console.log(reviewList)
-    return reviewList
+    return {reviewList:reviewList,reviewPageCnt:reviewPageCnt}
   }
 
   async getAllUser(){
@@ -108,4 +110,30 @@ async patchReview(req){
     }
   }
 
+
+  // admin api
+  async getReviews(token:any, query:{p:string}) :Promise<any>{
+    console.log(query.p,"쿼리")
+    let p = parseInt(query.p)
+    let min
+    let max
+    if(p === 1){
+      min = 1
+    }else{
+      min = Number(p)
+    }      
+
+
+    let getUserInfo = await this.authService.validateToken(token,1)
+    let userId = getUserInfo[0].id
+
+    if(userId === 2054){
+      let pageCount = await this.reviewRepository.query(`SELECT count(*) as cnt FROM REVIEW WHERE del_yn = 'n'`)
+      let reviewList = await this.reviewRepository.query(`SELECT id,title,content,accessCount,submitIp,userId,createDate FROM REVIEW ORDER BY REVIEW.id DESC limit ${min},100`)
+      return { pageCount : pageCount, reviewList : reviewList }
+    }else{
+      return 0;
+    }
+  }
+    
 }
