@@ -336,3 +336,9 @@ proxy_set_header Connection "upgrade";
 - 백업 및 복구를 위해 스냅샷을 생성 합니다.
 
 
+## API
+
+![스크린샷, 2021-11-18 17-57-22](https://user-images.githubusercontent.com/74460103/142383576-154c39a6-73c0-4999-9e89-984881b34ca8.png)
+
+
+
