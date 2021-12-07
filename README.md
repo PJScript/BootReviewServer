@@ -1,5 +1,5 @@
 
-**링크**: https://bootview.info/
+**접속 링크**: https://bootview.info/
 
 **채팅 서버**: https://github.com/kilo718/BootReviewChatServer
 
