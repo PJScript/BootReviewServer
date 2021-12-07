@@ -1,5 +1,7 @@
 
 **링크**: https://bootview.info/
+
+**채팅 서버**: https://github.com/kilo718/BootReviewChatServer
 ##### first step
 - **우측 상단 게스트 로그인**
 
