@@ -3,7 +3,6 @@
 
 **채팅 서버**: https://github.com/kilo718/BootReviewChatServer
 
-**관리자 페이지**: https://github.com/kilo718/managerClient
 ##### first step
 - **우측 상단 게스트 로그인**
 
